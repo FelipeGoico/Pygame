@@ -8,13 +8,25 @@ screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 
 pygame.display.set_caption("My First Pygame Game")
 
-player_image = pygame.image.load(
-    "assets\\images\\characters\\player\\walking\\Walking_KG_2_1.PNG")
-player_image = pygame.transform.scale(player_image, (player_image.get_width() * constants.SCALE_PLAYER,
-                                                     player_image.get_height() * constants.SCALE_PLAYER))
+
+def scale_image(image, scale):
+    width = image.get_width()
+    height = image.get_height()
+    new_image = pygame.transform.scale(
+        image, (int(width * scale), int(height * scale)))
+    return new_image
 
 
-player = Player(50, 50, player_image)
+animation_frames = []
+for i in range(7):
+    i += 1
+    img = pygame.image.load(
+        f"assets\\images\\characters\\player\\walking\\Walking_KG_2_{i}.PNG")
+    img = scale_image(img, constants.SCALE_PLAYER)
+    animation_frames.append(img)
+
+
+player = Player(50, 50, animation_frames)
 
 
 # variables de movimiento del jugador
@@ -44,11 +56,14 @@ while running:
         delta_y = constants.SPEED
     if mover_derecha:
         delta_x = constants.SPEED
+        player.update()
     if mover_izquierda:
         delta_x = -constants.SPEED
+        player.update()
 
     # Mover jugador
     player.move(delta_x, delta_y)
+
     player.draw(screen)
     for event in pygame.event.get():
         # Check for QUIT event
