@@ -1,18 +1,21 @@
 import pygame
 import constants
 from player import Player
-
-player = Player(50, 50)
-
-
 # Initialize Pygame
 pygame.init()
-
-
 # Create a window
 screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 
-pygame.display.set_caption("My First Pygame Window")
+pygame.display.set_caption("My First Pygame Game")
+
+player_image = pygame.image.load(
+    "assets\\images\\characters\\player\\walking\\Walking_KG_2_1.PNG")
+player_image = pygame.transform.scale(player_image, (player_image.get_width() * constants.SCALE_PLAYER,
+                                                     player_image.get_height() * constants.SCALE_PLAYER))
+
+
+player = Player(50, 50, player_image)
+
 
 # variables de movimiento del jugador
 
