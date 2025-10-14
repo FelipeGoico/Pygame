@@ -17,24 +17,35 @@ def scale_image(image, scale):
     return new_image
 
 
-animation_frames = []
+walking_images = []
 for i in range(7):
     i += 1
     img = pygame.image.load(
         f"assets\\images\\characters\\player\\walking\\Walking_KG_2_{i}.PNG")
     img = scale_image(img, constants.SCALE_PLAYER)
-    animation_frames.append(img)
+    walking_images.append(img)
+
+idle_images = []
+for i in range(4):
+    i += 1
+    img = pygame.image.load(
+        f"assets\\images\\characters\\player\\iddle\\Idle_KG_1_{i}.PNG")
+
+    img = scale_image(img, constants.SCALE_PLAYER)
+    idle_images.append(img)
 
 
-player = Player(50, 50, animation_frames)
+player = Player(50, 50, walking_images, idle_images)
 
 
 # variables de movimiento del jugador
 
-mover_arriba = False
-mover_abajo = False
-mover_derecha = False
-mover_izquierda = False
+move_up = False
+move_down = False
+move_right = False
+move_left = False
+walking = False
+idle = True
 
 # Controlar el frame rate
 clock = pygame.time.Clock()
@@ -50,17 +61,31 @@ while running:
     delta_x = 0
     delta_y = 0
 
-    if mover_arriba:
+    if move_up:
         delta_y = -constants.SPEED
-    if mover_abajo:
-        delta_y = constants.SPEED
-    if mover_derecha:
-        delta_x = constants.SPEED
-        player.update()
-    if mover_izquierda:
-        delta_x = -constants.SPEED
-        player.update()
 
+    if move_down:
+        delta_y = constants.SPEED
+
+    if move_right:
+        delta_x = constants.SPEED
+        walking = True
+
+    if move_left:
+        delta_x = -constants.SPEED
+        walking = True
+
+    if not (move_left or move_right):
+        walking = False
+        idle = True
+
+    if walking:
+        player.walking()
+        idle = False
+
+    if idle:
+        player.idle()
+        walking = False
     # Mover jugador
     player.move(delta_x, delta_y)
 
@@ -72,23 +97,23 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_a:
-                mover_izquierda = True
+                move_left = True
             if event.key == pygame.K_d:
-                mover_derecha = True
+                move_right = True
             if event.key == pygame.K_s:
-                mover_abajo = True
+                move_down = True
             if event.key == pygame.K_w:
-                mover_arriba = True
+                move_up = True
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
-                mover_izquierda = False
+                move_left = False
             if event.key == pygame.K_d:
-                mover_derecha = False
+                move_right = False
             if event.key == pygame.K_s:
-                mover_abajo = False
+                move_down = False
             if event.key == pygame.K_w:
-                mover_arriba = False
+                move_up = False
 
     pygame.display.update()
 
