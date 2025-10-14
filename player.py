@@ -14,8 +14,7 @@ class Player():
         self.update_time = pygame.time.get_ticks()
         # self.image = walking_images[self.walking_index]
 
-        self.shape = pygame.Rect(
-            0, 0, constants.WIDTH_PLAYER, constants.HEIGHT_PLAYER)
+        self.shape = self.image.get_rect()
         self.shape.center = (x, y)
 
     def walking(self):

@@ -1,6 +1,7 @@
 import pygame
 import constants
 from player import Player
+from weapon import Weapon
 # Initialize Pygame
 pygame.init()
 # Create a window
@@ -17,26 +18,38 @@ def scale_image(image, scale):
     return new_image
 
 
+# ==============================================================================
+# Importar imagenes
+
+# Cargar imagen del arma
+gun_image = pygame.image.load(
+    "assets\\images\\weapons\\gun.png").convert_alpha()
+gun_image = scale_image(gun_image, constants.SCALE_WEAPON)
+
+
+# Cargar imagenes caminando
 walking_images = []
 for i in range(7):
     i += 1
     img = pygame.image.load(
-        f"assets\\images\\characters\\player\\walking\\Walking_KG_2_{i}.PNG")
+        f"assets\\images\\characters\\player\\walking\\Walking_KG_1_{i}.PNG").convert_alpha()
     img = scale_image(img, constants.SCALE_PLAYER)
     walking_images.append(img)
-
+# Cargar imagenes quieto
 idle_images = []
 for i in range(4):
     i += 1
     img = pygame.image.load(
-        f"assets\\images\\characters\\player\\iddle\\Idle_KG_1_{i}.PNG")
+        f"assets\\images\\characters\\player\\iddle\\Idle_KG_1_{i}.PNG").convert_alpha()
 
     img = scale_image(img, constants.SCALE_PLAYER)
     idle_images.append(img)
-
-
+# ==============================================================================
+# Crear jugador de la clase Player
 player = Player(50, 50, walking_images, idle_images)
 
+# Crear arma de la clase Weapon
+gun = Weapon(gun_image)
 
 # variables de movimiento del jugador
 
@@ -51,6 +64,7 @@ idle = True
 clock = pygame.time.Clock()
 
 running = True
+
 while running:
 
     clock.tick(constants.FPS)
@@ -89,7 +103,15 @@ while running:
     # Mover jugador
     player.move(delta_x, delta_y)
 
+    # actualiza el estado del arma
+    gun.update(player)
+
+    # Dibujar al jugador
     player.draw(screen)
+
+    # Dibujar el arma
+    gun.draw(screen)
+
     for event in pygame.event.get():
         # Check for QUIT event
         if event.type == pygame.QUIT:
