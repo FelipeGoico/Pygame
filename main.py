@@ -2,146 +2,89 @@ import pygame
 import constants
 from player import Player
 from weapon import Weapon
-# Initialize Pygame
-pygame.init()
-# Create a window
-screen = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
 
+# Inicializar Pygame
+pygame.init()
+screen = pygame.display.set_mode(
+    (constants.WIDTH, constants.HEIGHT), pygame.SCALED)
 pygame.display.set_caption("My First Pygame Game")
+
+# Función para escalar imágenes
 
 
 def scale_image(image, scale):
     width = image.get_width()
     height = image.get_height()
-    new_image = pygame.transform.scale(
-        image, (int(width * scale), int(height * scale)))
-    return new_image
-
+    return pygame.transform.scale(image, (int(width * scale), int(height * scale)))
 
 # ==============================================================================
-# Importar imagenes
+# Cargar imágenes
 
-# Cargar imagen del arma
-gun_image = pygame.image.load(
-    "assets\\images\\weapons\\gun.png").convert_alpha()
+
+# Arma
+gun_image = pygame.image.load("assets/images/weapons/gun.png").convert_alpha()
 gun_image = scale_image(gun_image, constants.SCALE_WEAPON)
-
-
-# Cargar imagenes caminando
-walking_images = []
-for i in range(7):
-    i += 1
-    img = pygame.image.load(
-        f"assets\\images\\characters\\player\\walking\\Walking_KG_1_{i}.PNG").convert_alpha()
-    img = scale_image(img, constants.SCALE_PLAYER)
-    walking_images.append(img)
-# Cargar imagenes quieto
-idle_images = []
-for i in range(4):
-    i += 1
-    img = pygame.image.load(
-        f"assets\\images\\characters\\player\\iddle\\Idle_KG_1_{i}.PNG").convert_alpha()
-
-    img = scale_image(img, constants.SCALE_PLAYER)
-    idle_images.append(img)
-# ==============================================================================
-# Crear jugador de la clase Player
-player = Player(50, 50, walking_images, idle_images)
-
-# Crear arma de la clase Weapon
 gun = Weapon(gun_image)
 
-# variables de movimiento del jugador
+# Player
+walking_images = []
+for i in range(1, 8):
+    img = pygame.image.load(
+        f"assets/images/characters/player/walking/Walking_KG_1_{i}.PNG").convert_alpha()
+    walking_images.append(scale_image(img, constants.SCALE_PLAYER))
 
-move_up = False
-move_down = False
-move_right = False
-move_left = False
-walking = False
-idle = True
+idle_images = []
+for i in range(1, 5):
+    img = pygame.image.load(
+        f"assets/images/characters/player/iddle/Idle_KG_1_{i}.PNG").convert_alpha()
+    idle_images.append(scale_image(img, constants.SCALE_PLAYER))
 
-# Controlar el frame rate
+player = Player(50, 50, walking_images, idle_images)
+
+# Control FPS
 clock = pygame.time.Clock()
-
 running = True
 
+# ==============================================================================
+# Bucle principal
 while running:
-
     clock.tick(constants.FPS)
-
     screen.fill(constants.COLOR_BG)
 
-    # Calcular movimiento del jugador
-    delta_x = 0
-    delta_y = 0
-
-    if move_up:
-        delta_y = -constants.SPEED
-
-    if move_down:
-        delta_y = constants.SPEED
-
-    if move_right:
-        delta_x = constants.SPEED
-        walking = True
-
-    if move_left:
-        delta_x = -constants.SPEED
-        walking = True
-
-    if not (move_left or move_right):
-        walking = False
-        idle = True
-
-    if walking:
-        player.walking()
-        idle = False
-
-    if idle:
-        player.idle()
-        walking = False
-    # Mover jugador
-    player.move(delta_x, delta_y)
-
-    # actualiza el estado del arma
-    gun.update(player)
-
-    # Dibujar al jugador
-    player.draw(screen)
-
-    # Dibujar el arma
-    gun.draw(screen)
-
+    # -------------------------------
+    # Manejo de eventos
     for event in pygame.event.get():
-        # Check for QUIT event
         if event.type == pygame.QUIT:
             running = False
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a:
-                move_left = True
-            if event.key == pygame.K_d:
-                move_right = True
-            if event.key == pygame.K_s:
-                move_down = True
-            if event.key == pygame.K_w:
-                move_up = True
+    keys = pygame.key.get_pressed()
+    delta_x = 0
+    delta_y = 0
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a:
-                move_left = False
-            if event.key == pygame.K_d:
-                move_right = False
-            if event.key == pygame.K_s:
-                move_down = False
-            if event.key == pygame.K_w:
-                move_up = False
+    if keys[pygame.K_a]:
+        delta_x = -constants.SPEED
+    if keys[pygame.K_d]:
+        delta_x = constants.SPEED
+    if keys[pygame.K_w]:
+        delta_y = -constants.SPEED
+    if keys[pygame.K_s]:
+        delta_y = constants.SPEED
 
-    pygame.display.update()
+    # Determinar si está caminando
+    walking = delta_x != 0 or delta_y != 0
 
-    # Fill the screen with a color (RGB)
-    screen.fill((0, 0, 0))
+    # Actualizar jugador
+    player.update(walking)
+    player.move(delta_x, delta_y)
 
-    # Update the display
+    # Actualizar arma
+    gun.update(player)
+
+    # Dibujar todo
+    player.draw(screen)
+    gun.draw(screen)
+
+    # Actualizar pantalla
     pygame.display.flip()
+
 pygame.quit()

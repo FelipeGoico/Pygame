@@ -11,5 +11,5 @@ COLOR_PLAYER = (255, 255, 0)
 COLOR_GUN = (0, 255, 0)
 COLOR_BG = (0, 0, 20)
 # Otros
-FPS = 180
+FPS = 60
 SPEED = 1
